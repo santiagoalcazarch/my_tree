@@ -1,7 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_tree/screens/style/text_style.dart';
+
+import 'home/home_scan.dart';
+import 'utils/navigator.dart';
 
 class LandingScreen extends StatefulWidget {
   @override
@@ -10,12 +12,12 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> with TickerProviderStateMixin {
 
-  int tabIndex = 0;
   TabController tabController;
+  int tabIndex = 0;
 
   @override
   void initState() {
-    tabController = TabController(length: 2, vsync: this, );
+    tabController = TabController(length: 2, vsync: this );
     tabController.addListener(() {
       setState(() {
         tabIndex = tabController.index;
@@ -115,11 +117,14 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
               ),
             ),
           ):
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: Text(
-              '¡Vamos! >',
-              style: getTextStyle(false, 18, 'r', Colors.black),
+          InkWell(
+            onTap: () => navigateTo( TakePictureScreen(), context ),
+            child: Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Text(
+                '¡Vamos! >',
+                style: getTextStyle(false, 18, 'r', Colors.black),
+              ),
             ),
           )
       ],
@@ -173,7 +178,7 @@ class _LandingScreenState extends State<LandingScreen> with TickerProviderStateM
         tabIndicator(),
         navButtoms(),
         SvgPicture.asset(
-          'assets/screens/base-montañas.svg',
+          'assets/screens/base-montanas.svg',
           fit: BoxFit.cover,
         ),
       ],
