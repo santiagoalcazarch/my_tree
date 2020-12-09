@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_tree/screens/style/text_style.dart';
 import 'package:my_tree/screens/utils/navigator.dart';
 import 'package:path/path.dart' show join;
@@ -45,6 +46,14 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       navigateTo( ScanResults(imagePath: imagePath), context);
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future selectFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    if ( pickedFile != null ){
+      navigateTo( ScanResults(imagePath: pickedFile.path), context);
     }
   }
 
@@ -90,12 +99,30 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     );
   }
 
-  Widget floatingButtom(){
+  Widget floutingBottom( IconData icon, Function onTap ){
     return Container(
-      margin: EdgeInsets.only(bottom: 60, right: 15),
-      child: FloatingActionButton(
-        child: Icon(Icons.camera_alt_outlined, color: Color(0xFF0C3D00)),
-        onPressed: takePicture,
+      margin: EdgeInsets.only(bottom: 60 ),
+      padding: EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Color(0xFFC0D0C5),
+        shape: BoxShape.circle
+      ),
+      child: InkWell(
+        child: Icon(icon, color: Color(0xFF0C3D00)),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget floutingMenu(){
+    return Padding(
+      padding: const EdgeInsets.only( left: 35 ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          floutingBottom( Icons.photo, selectFromGallery ),
+          floutingBottom( Icons.camera_alt_outlined, takePicture ),
+        ],
       ),
     );
   }
@@ -111,8 +138,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         automaticallyImplyLeading: false,
       ),
       body: body(),
-      extendBodyBehindAppBar: false,
-      floatingActionButton: floatingButtom()
+      floatingActionButton: floutingMenu()
     );
   }
 

@@ -1,14 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_tree/screens/style/text_style.dart';
+import 'package:my_tree/services/images.dart';
 
 class ScanResults extends StatefulWidget {
 
   final String imagePath;
-  final String normalName = "Guadua";
-  final String scientificName = "Tumul Stuptim";
+  final String normalName = "Planta";
 
   const ScanResults({Key key, this.imagePath}) : super(key: key);
 
@@ -18,6 +20,22 @@ class ScanResults extends StatefulWidget {
 
 class _ScanResultsState extends State<ScanResults> {
 
+  int similitude;
+  String scientificName;
+  List<String> images;
+  bool initLoading;
+
+  Future<void> getImages() async {
+    final responseMap = await ImageServices.sendImage( widget.imagePath );
+    setState(() {
+      this.images = List.from( responseMap["images"] );
+      this.scientificName = responseMap["imageName"];
+      this.similitude = responseMap["similitude"];
+      this.initLoading = false;
+    });
+    return;
+  }
+
   Widget appBar(){
     return Column(
       children: [
@@ -25,7 +43,6 @@ class _ScanResultsState extends State<ScanResults> {
           height: 155,
           child: Stack(
             children: [
-              /// Image
               Container(
                 decoration: BoxDecoration(
                   image: DecorationImage( 
@@ -77,7 +94,7 @@ class _ScanResultsState extends State<ScanResults> {
           color: Color(0xFF6A8164),
           padding: EdgeInsets.symmetric( vertical: 6 ),
           child: Text(
-            widget.scientificName,
+            this.scientificName,
             textAlign: TextAlign.center,
             style: getTextStyle(false, 18, 'l', Colors.white),
           ),
@@ -107,39 +124,24 @@ class _ScanResultsState extends State<ScanResults> {
           ),
         ),
         Container(
-          height: 120,
+          height: 100,
           margin: EdgeInsets.only(left: 15),
           child: ListView(
             scrollDirection: Axis.horizontal,
-            children: [
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.asset(
-                    'assets/screens/prueba.png',
+            children: this.images.map(
+              ( stringImg ){
+                //final bytesImage = Base64Decoder().convert(stringImg);
+                Uint8List _bytes = base64.decode(stringImg.split(',').last);
+
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.memory( _bytes ),
                   ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.asset(
-                    'assets/screens/prueba.png',
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.0),
-                  child: Image.asset(
-                    'assets/screens/prueba.png',
-                  ),
-                ),
-              ),
-            ],
+                );
+              }
+            ).toList(),
           ),
         )
       ],
@@ -173,10 +175,11 @@ class _ScanResultsState extends State<ScanResults> {
                     child: Text(
                       "La foto que has compartidotiene una similitud del",
                       style: getTextStyle(false, 14, 'l', Colors.black),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   Text(
-                    "80%",
+                    this.similitude.toString() + "%",
                     style: getTextStyle(false, 36, 'b', Colors.black),
                   ),
                   Padding(
@@ -184,6 +187,7 @@ class _ScanResultsState extends State<ScanResults> {
                     child: Text(
                       "Con el arbol de Guadua, según nuestro\nprocesamiento y la base de datos ",
                       style: getTextStyle(false, 14, 'l', Colors.black),
+                      textAlign: TextAlign.center,
                     ),
                   )
                 ],
@@ -200,11 +204,34 @@ class _ScanResultsState extends State<ScanResults> {
     return Column(
       children: [
         appBar(),
+        initLoading ? 
+        Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 20, bottom: 5),
+              child: Text(
+                "Realizando la consulta...",
+                style: getTextStyle(false, 14, 'l', Colors.black),
+              ),
+            ),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation( Color(0xFF6A8164) ),
+            )
+          ],
+        ):
         Expanded(
           child: mainInfo()
-        ),
+        )
       ],
     );
+  }
+
+  @override
+  void initState() {
+    this.initLoading = true;
+    this.scientificName = "";
+    getImages();
+    super.initState();
   }
 
   @override

@@ -43,6 +43,9 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Tu camara para escanear la foto principal</string>
-
+	<key>NSPhotoLibraryUsageDescription </key>
+	<string>Tu camara para escanear la foto principal</string>
+	<key>NSMicrophoneUsageDescription </key>
+	<string>Tu camara para escanear la foto principal</string>
 </dict>
 </plist>
