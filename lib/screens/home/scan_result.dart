@@ -7,6 +7,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_tree/screens/style/text_style.dart';
 import 'package:my_tree/services/images.dart';
 
+extension StringExtension on String {
+    String capitalize() {
+      return "${this[0].toUpperCase()}${this.substring(1)}";
+    }
+}
+
 class ScanResults extends StatefulWidget {
 
   final String imagePath;
@@ -20,16 +26,24 @@ class ScanResults extends StatefulWidget {
 
 class _ScanResultsState extends State<ScanResults> {
 
-  int similitude;
+  double similitude;
   String scientificName;
   List<String> images;
   bool initLoading;
+
+  String getCorrectName( String backName ){
+    var words = backName.split("_");
+    for (var i = 0; i < words.length; i++) {
+      words[i] = words[i].capitalize();
+    }
+    return words.join(" ");
+  }
 
   Future<void> getImages() async {
     final responseMap = await ImageServices.sendImage( widget.imagePath );
     setState(() {
       this.images = List.from( responseMap["images"] );
-      this.scientificName = responseMap["imageName"];
+      this.scientificName = getCorrectName(responseMap["kind"]);
       this.similitude = responseMap["similitude"];
       this.initLoading = false;
     });
@@ -185,7 +199,7 @@ class _ScanResultsState extends State<ScanResults> {
                   Padding(
                     padding: EdgeInsets.only( bottom: 20, top: 5 ),
                     child: Text(
-                      "Con el arbol de Guadua, según nuestro\nprocesamiento y la base de datos ",
+                      "Con la planta ${this.scientificName}, según nuestro\nprocesamiento y la base de datos ",
                       style: getTextStyle(false, 14, 'l', Colors.black),
                       textAlign: TextAlign.center,
                     ),
