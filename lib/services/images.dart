@@ -11,7 +11,6 @@ class ImageServices{
     });
     print("Enviando petición...");
     final response = await dio.post("http://192.168.0.4:3000/api/cbir/", data: formData);
-    print(response.data);
     return response.data;
 
     // return {

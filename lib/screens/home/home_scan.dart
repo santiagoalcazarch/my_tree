@@ -26,7 +26,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   /* ***********************     Funciones     ******************** */
   @override
   void initState() {
-    //loadCamera();
+    loadCamera();
     super.initState();
   }
 
@@ -137,7 +137,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         ),
         automaticallyImplyLeading: false,
       ),
-      //body: body(),
+      body: body(),
       floatingActionButton: floutingMenu()
     );
   }

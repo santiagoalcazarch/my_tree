@@ -193,7 +193,7 @@ class _ScanResultsState extends State<ScanResults> {
                     ),
                   ),
                   Text(
-                    this.similitude.toString() + "%",
+                    this.similitude.toStringAsFixed(2) + "%",
                     style: getTextStyle(false, 36, 'b', Colors.black),
                   ),
                   Padding(
